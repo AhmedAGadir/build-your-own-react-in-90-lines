@@ -1,9 +1,26 @@
 // file: src/qnd-react-dom.js
+import QndReact from './qnd-react';
 import * as snabbdom from 'snabbdom';
+import eventlistenersModule from 'snabbdom/modules/eventlisteners';
 import propsModule from 'snabbdom/modules/props';
 
+// QndReactDom telling React how to update DOM
+QndReact.__updater = (componentInstance) => {
+    // logic on how to update the DOM when you call this.setState
+
+    // get the oldVNode stored in __vNode
+    const oldVNode = componentInstance.__vNode;
+    // find the updated DOM node by calling the render method
+    const newVNode = componentInstance.render();
+
+    // update the __vNode property with updated __vNode
+    componentInstance.__vNode = reconcile(oldVNode, newVNode);
+}
+
+
 // propsModule -> this helps in patching text attributes
-const reconcile = snabbdom.init([propsModule]);
+// eventlistenersModule -> this helps in patching event attributes
+const reconcile = snabbdom.init([propsModule, eventlistenersModule]);
 // we need to maintain the latest rootVNode returned by render
 let rootVNode;
 
@@ -28,3 +45,5 @@ const QndReactDom = {
 };
 
 export default QndReactDom;
+
+
